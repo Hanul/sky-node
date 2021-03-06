@@ -1,12 +1,11 @@
 {
-    "name": "skynode",
-    "author": "Young Jae Sim",
+    "name": "@hanul/skynode",
+    "author": "Sim Young Jae",
     "homepage": "https://github.com/Hanul/skynode",
     "version": "0.0.1",
     "types": "./lib/index.d.ts",
     "main": "./lib/index.js",
     "dependencies": {
-        "@hanul/el.js": "^0.0.7",
         "eventcontainer": "^0.0.2",
         "skyutil": "^0.0.1"
     }
