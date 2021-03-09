@@ -2,17 +2,10 @@
 # yarn lockfile v1
 
 
-"@hanul/el.js@^0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@hanul/el.js/-/el.js-0.0.7.tgz#748ee8d24fac34e4a58522822d1df93cbbce6bee"
-  integrity sha512-Vc9f4P+sytFf7MntfqrkyxikUZHwfK4lBDXMsoYp9pKbzw7sQ3pI4ppL+xoUwjJLOBiJpNIv+MkfPc+7HZrn6A==
+"eventcontainer@^0.0.2":
+  "resolved" "file:../eventcontainer"
+  "version" "0.0.2"
 
-eventcontainer@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/eventcontainer/-/eventcontainer-0.0.2.tgz#603bcc333ba9be0e8477ffa18a1c17b273e00c4c"
-  integrity sha512-0BY6T0iIVvoSE/9kVTIp0T8EKCa0+hJ+VS0AvtQU1OCkxS5H8m3jV2UI1cf/az3m9+ny+DipiDKIkAe4l19D9Q==
-
-skyutil@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/skyutil/-/skyutil-0.0.1.tgz#fdd8255b2eeac3ee06e3643427e34db0ee42ab8b"
-  integrity sha512-rcbUtbwiuOJs9rvZHzVUgV1UBhOa7KxnPEmQapfhzSwUAFM2THLNZuoF/8XMFEuznRqPMeYeABo8TFiFrgBL+w==
+"skyutil@file:../skyutil":
+  "resolved" "file:../skyutil"
+  "version" "0.0.1"

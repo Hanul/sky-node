@@ -1,6 +1,6 @@
 import DomNode from "./DomNode";
 
-const el = <EL extends HTMLElement>(tag: string, ...children: DomNode<HTMLElement>[]) => {
+const el = <EL extends HTMLElement>(tag: string, ...children: (DomNode<HTMLElement> | string)[]) => {
 
     let id: string | undefined;
     const idIndex = tag.indexOf("#");
@@ -35,7 +35,13 @@ const el = <EL extends HTMLElement>(tag: string, ...children: DomNode<HTMLElemen
     }
 
     const domNode = new DomNode<EL>(element);
-    domNode.append(...children);
+    for (const child of children) {
+        if (typeof child === "string") {
+            element.append(child);
+        } else {
+            domNode.append(child);
+        }
+    }
     return domNode;
 }
 

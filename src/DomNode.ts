@@ -33,11 +33,15 @@ export default class DomNode<T extends HTMLElement> extends SkyNode {
 
     public append(...nodes: DomNode<any>[]): void {
         super.append(...nodes);
-        const fragment = new DocumentFragment();
-        for (const node of nodes) {
-            fragment.append(node.domElement);
+        if (nodes.length === 1) {
+            this.domElement.append(nodes[0].domElement);
+        } else {
+            const fragment = new DocumentFragment();
+            for (const node of nodes) {
+                fragment.append(node.domElement);
+            }
+            this.domElement.append(fragment);
         }
-        this.domElement.append(fragment);
     }
 
     public appendTo(node: DomNode<any>, index: number): void {
