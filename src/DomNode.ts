@@ -3,11 +3,11 @@ import SkyNode from "./SkyNode";
 
 export type Style = { [key: string]: string | number };
 
-export default class DomNode<T extends HTMLElement> extends SkyNode {
+export default class DomNode<EL extends HTMLElement> extends SkyNode {
 
-    protected children: DomNode<any>[] = [];
+    protected children: DomNode<HTMLElement>[] = [];
 
-    constructor(public domElement: T) {
+    constructor(public domElement: EL) {
         super();
     }
 
@@ -31,25 +31,16 @@ export default class DomNode<T extends HTMLElement> extends SkyNode {
         super.off(eventName, eventHandler);
     }
 
-    public append(...nodes: DomNode<any>[]): void {
-        super.append(...nodes);
-        if (nodes.length === 1) {
-            this.domElement.append(nodes[0].domElement);
-        } else {
-            const fragment = new DocumentFragment();
-            for (const node of nodes) {
-                fragment.append(node.domElement);
-            }
-            this.domElement.append(fragment);
-        }
+    public appendText(text: string): void {
+        this.domElement.append(text);
     }
 
-    public appendTo(node: DomNode<any>, index: number): void {
+    public appendTo(node: DomNode<HTMLElement>, index?: number): void {
         super.appendTo(node, index);
-        if (index < this.children.length) {
-            this.domElement.insertBefore(node.domElement, this.children[index].domElement);
+        if (index !== undefined && index < node.children.length) {
+            node.domElement.insertBefore(this.domElement, node.children[index].domElement);
         } else {
-            this.domElement.append(node.domElement);
+            node.domElement.append(this.domElement);
         }
     }
 

@@ -1,4 +1,4 @@
-import { DomNode } from ".";
+import DomNode from "./DomNode";
 
 class BodyNode extends DomNode<HTMLBodyElement> {
 

@@ -3,23 +3,22 @@ import SkyUtil from "skyutil";
 
 export default abstract class SkyNode extends EventContainer {
 
-    protected parent: SkyNode | undefined;
+    public parent: SkyNode | undefined;
     protected children: SkyNode[] = [];
 
     public append(...nodes: SkyNode[]): void {
         for (const node of nodes) {
-            this.children.push(node);
-            node.parent = this;
+            node.appendTo(this);
         }
     }
 
-    public appendTo(node: SkyNode, index: number): void {
-        if (index < this.children.length) {
-            this.children.splice(index, 0, node);
+    public appendTo(node: SkyNode, index?: number): void {
+        if (index !== undefined && index < node.children.length) {
+            node.children.splice(index, 0, this);
         } else {
-            this.children.push(node);
+            node.children.push(this);
         }
-        node.parent = this;
+        this.parent = node;
     }
 
     public delete(): void {
