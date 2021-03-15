@@ -24,11 +24,11 @@ export default abstract class ClosableFloatingDomNode<EL extends HTMLElement> ex
         this.delete();
     };
 
-    public appendTo(node: DomNode<HTMLElement>, index?: number): void {
-        super.appendTo(node, index);
+    public appendTo(node: DomNode<HTMLElement>, index?: number): this {
+        const that = super.appendTo(node, index);
         if ((node instanceof ClosableFloatingDomNode) !== true) {
             // 부모를 타고 검색하여 Body 혹은 Popup를 찾아, 그것을 클릭하면 닫히도록
-            let ancestor: SkyNode | undefined = this.parent;
+            let ancestor: SkyNode | undefined = node.parent;
             while (ancestor !== undefined) {
                 if (ancestor === BodyNode || ancestor instanceof Popup) {
                     this.closeZone = ancestor;
@@ -37,12 +37,13 @@ export default abstract class ClosableFloatingDomNode<EL extends HTMLElement> ex
                 ancestor = ancestor.parent;
             }
         }
+        return that;
     }
 
-    public delete() {
+    public exceptFromParent(): void {
+        super.exceptFromParent();
         if (this.closeZone !== undefined && this.closeZone.deleted !== true) {
             this.closeZone.off("mousedown", this.touchCloseZone);
         }
-        super.delete();
     }
 }

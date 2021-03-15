@@ -1,9 +1,9 @@
 import DomNode, { Style } from "./DomNode";
 
-type EventHandler<EL, EV> = (event: EV, element: EL) => void;
+type EventHandler<EV, EL extends HTMLElement> = (event: EV, domNode: DomNode<EL>) => void;
 
-interface Attributes<EL> {
-    [name: string]: Style | string | undefined | EventHandler<EL, unknown>;
+interface Attributes<EL extends HTMLElement> {
+    [name: string]: Style | string | number | boolean | undefined | EventHandler<any, EL>;
 }
 
 export type Child<EL extends HTMLElement> = Attributes<EL> | DomNode<EL> | string;
@@ -21,6 +21,8 @@ const el = <EL extends HTMLElement>(tag: string, ...children: Child<EL>[]) => {
                     domNode.on(name, value);
                 } else if (name === "style" && typeof value === "object") {
                     domNode.style(value);
+                } else {
+                    (domNode.domElement as any)[name] = value;
                 }
             }
         }
