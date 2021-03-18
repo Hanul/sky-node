@@ -4,10 +4,10 @@ import SkyNode from "./SkyNode";
 
 export type Style = { [key: string]: string | number };
 
-export default class DomNode<EL extends HTMLElement> extends SkyNode {
+export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNode {
 
-    public parent: DomNode<HTMLElement> | undefined;
-    protected children: DomNode<HTMLElement>[] = [];
+    public parent: DomNode | undefined;
+    public children: DomNode[] = [];
 
     private domEventMap: {
         [eventName: string]: {
@@ -55,11 +55,16 @@ export default class DomNode<EL extends HTMLElement> extends SkyNode {
         super.off(eventName, eventHandler);
     }
 
+    public async fireEvent(eventName: string, ...params: any[]): Promise<void> {
+        this.domElement.dispatchEvent(new Event(eventName));
+        return super.fireEvent(eventName, ...params);
+    }
+
     public appendText(text: string): void {
         this.domElement.append(text);
     }
 
-    public appendTo(node: DomNode<HTMLElement>, index?: number): this {
+    public appendTo(node: DomNode, index?: number): this {
         if (index !== undefined && index < node.children.length) {
             node.domElement.insertBefore(this.domElement, node.children[index].domElement);
         } else {
