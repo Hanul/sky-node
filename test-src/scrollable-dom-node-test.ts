@@ -15,10 +15,10 @@ for (let i = 0; i < 100; i += 1) {
 }
 
 class TestItem extends ScrollItemDomNode<DT> {
-    public get data() { return this._data; }
-    constructor(private _data: DT) {
+    public get nodeData() { return this.data; }
+    constructor(private data: DT) {
         super(document.createElement("div"));
-        this.appendText(_data.name);
+        this.appendText(data.name);
     }
 }
 

@@ -1,5 +1,5 @@
+import Debouncer from "@hanul/debouncer";
 import SkyUtil from "skyutil";
-import Debouncer from "../../debouncer/Debouncer";
 import DomNode from "./DomNode";
 
 export interface ScrollableDomNodeOptions {
@@ -7,28 +7,24 @@ export interface ScrollableDomNodeOptions {
     baseChildHeight: number;
 }
 
-export abstract class ScrollItemDomNode<DT, EL extends HTMLElement = HTMLElement> extends DomNode<EL> {
-    abstract get data(): DT;
+export abstract class ScrollItemDomNode<NDT, EL extends HTMLElement = HTMLElement> extends DomNode<EL> {
+    abstract get nodeData(): NDT;
 }
 
-export default abstract class ScrollableDomNode<DT, EL extends HTMLElement = HTMLElement> extends DomNode<EL> {
+export default abstract class ScrollableDomNode<NDT, EL extends HTMLElement = HTMLElement> extends DomNode<EL> {
 
     private topPaddingNode: DomNode;
     private bottomPaddingNode: DomNode;
 
-    private dataSet: { data: DT, height: number, dom?: DomNode }[] = [];
+    private nodeDataSet: { data: NDT, height: number, dom?: DomNode }[] = [];
     private scrollAreaHeight = 0;
 
     constructor(
         domElement: EL,
-        dataSet: DT[],
         private options: ScrollableDomNodeOptions,
-        private createChild: (data: DT) => ScrollItemDomNode<DT>,
+        private createChild: (nodeData: NDT) => ScrollItemDomNode<NDT>,
     ) {
         super(domElement);
-        for (const data of dataSet) {
-            this.dataSet.push({ data, height: options.baseChildHeight });
-        }
         super.append(
             this.topPaddingNode = new DomNode(document.createElement(options.childTag)),
             this.bottomPaddingNode = new DomNode(document.createElement(options.childTag)),
@@ -36,6 +32,12 @@ export default abstract class ScrollableDomNode<DT, EL extends HTMLElement = HTM
         this.domElement.style.overflowY = "scroll";
         this.on("scroll", this.refresh);
         window.addEventListener("resize", this.resizeHandler);
+    }
+
+    public init(nodeDataSet: NDT[]): void {
+        for (const data of nodeDataSet) {
+            this.nodeDataSet.push({ data, height: this.options.baseChildHeight });
+        }
     }
 
     private refresh = () => {
@@ -49,7 +51,7 @@ export default abstract class ScrollableDomNode<DT, EL extends HTMLElement = HTM
         let endIndex = -1;
 
         let top = 0;
-        for (const [index, info] of this.dataSet.entries()) {
+        for (const [index, info] of this.nodeDataSet.entries()) {
             if (top + info.height < startTop) {
                 topPadding += info.height;
             } else if (top > endTop) {
@@ -68,7 +70,7 @@ export default abstract class ScrollableDomNode<DT, EL extends HTMLElement = HTM
 
         this.bottomPaddingNode.exceptFromParent();
 
-        for (const [index, info] of this.dataSet.entries()) {
+        for (const [index, info] of this.nodeDataSet.entries()) {
             if (startIndex <= index && index <= endIndex) {
                 info.dom?.exceptFromParent();
                 info.dom?.appendTo(this);
@@ -90,19 +92,19 @@ export default abstract class ScrollableDomNode<DT, EL extends HTMLElement = HTM
     private resizeDebouncer: Debouncer = new Debouncer(100, () => this.calculateSize());
     private resizeHandler = () => this.resizeDebouncer.run();
 
-    public add(data: DT, index?: number): void {
-        if (index !== undefined && index < this.dataSet.length) {
-            SkyUtil.insert(this.dataSet, index, { data, height: this.options.baseChildHeight });
+    public add(data: NDT, index?: number): void {
+        if (index !== undefined && index < this.nodeDataSet.length) {
+            SkyUtil.insert(this.nodeDataSet, index, { data, height: this.options.baseChildHeight });
         } else {
-            this.dataSet.push({ data, height: this.options.baseChildHeight });
+            this.nodeDataSet.push({ data, height: this.options.baseChildHeight });
         }
         this.refresh();
     }
 
-    public remove(data: DT): void {
-        const index = this.dataSet.findIndex((d) => d.data === data);
+    public remove(data: NDT): void {
+        const index = this.nodeDataSet.findIndex((d) => d.data === data);
         if (index !== -1) {
-            this.dataSet.splice(index, 1);
+            this.nodeDataSet.splice(index, 1);
             this.refresh();
         }
     }
