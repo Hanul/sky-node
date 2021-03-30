@@ -18,7 +18,9 @@ export default abstract class ScrollableDomNode<DT, EL extends HTMLElement = HTM
     private calculateSize;
     private resizeDebouncer;
     private resizeHandler;
-    append(data: DT): void;
-    except(data: DT): void;
+    add(data: DT, index?: number): void;
+    remove(data: DT): void;
+    appendTo(node: DomNode, index?: number): this;
+    delete(): void;
 }
 //# sourceMappingURL=ScrollableDomNode.d.ts.map

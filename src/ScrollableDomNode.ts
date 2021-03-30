@@ -1,5 +1,5 @@
-import Debouncer from "@hanul/debouncer";
 import SkyUtil from "skyutil";
+import Debouncer from "../../debouncer/Debouncer";
 import DomNode from "./DomNode";
 
 export interface ScrollableDomNodeOptions {
@@ -7,30 +7,29 @@ export interface ScrollableDomNodeOptions {
     baseChildHeight: number;
 }
 
-export interface ScrollItemData {
-    id: string;
-}
-
-export abstract class ScrollItemDomNode<DT extends ScrollItemData, EL extends HTMLElement = HTMLElement> extends DomNode<EL> {
+export abstract class ScrollItemDomNode<DT, EL extends HTMLElement = HTMLElement> extends DomNode<EL> {
     abstract get data(): DT;
 }
 
-export default abstract class ScrollableDomNode<DT extends ScrollItemData, EL extends HTMLElement = HTMLElement> extends DomNode<EL> {
+export default abstract class ScrollableDomNode<DT, EL extends HTMLElement = HTMLElement> extends DomNode<EL> {
 
     private topPaddingNode: DomNode;
     private bottomPaddingNode: DomNode;
 
-    private childHeights: { [id: string]: number } = {};
+    private dataSet: { data: DT, height: number, dom?: DomNode }[] = [];
     private scrollAreaHeight = 0;
 
     constructor(
         domElement: EL,
-        private dataSet: DT[],
+        dataSet: DT[],
         private options: ScrollableDomNodeOptions,
         private createChild: (data: DT) => ScrollItemDomNode<DT>,
     ) {
         super(domElement);
-        this.append(
+        for (const data of dataSet) {
+            this.dataSet.push({ data, height: options.baseChildHeight });
+        }
+        super.append(
             this.topPaddingNode = new DomNode(document.createElement(options.childTag)),
             this.bottomPaddingNode = new DomNode(document.createElement(options.childTag)),
         );
@@ -50,64 +49,37 @@ export default abstract class ScrollableDomNode<DT extends ScrollItemData, EL ex
         let endIndex = -1;
 
         let top = 0;
-        let appended = false;
-
-        const first: ScrollItemDomNode<DT> | undefined = this.children.find((c) => c instanceof ScrollItemDomNode) as ScrollItemDomNode<DT>;
-        const last: ScrollItemDomNode<DT> | undefined = this.children.reverse().find((c) => c instanceof ScrollItemDomNode) as ScrollItemDomNode<DT>;
-
-        let firstIndex = -1;
-        let lastIndex = -1;
-
-        for (const [index, data] of this.dataSet.entries()) {
-            if (data === first?.data) { firstIndex = index; }
-            if (data === last?.data) { lastIndex = index; }
-        }
-
-        for (const [index, data] of this.dataSet.entries()) {
-            let childHeight = this.childHeights[data.id];
-            if (childHeight === undefined) {
-                childHeight = this.options.baseChildHeight;
-            }
-            if (top + childHeight < startTop) {
-                topPadding += childHeight;
+        for (const [index, info] of this.dataSet.entries()) {
+            if (top + info.height < startTop) {
+                topPadding += info.height;
             } else if (top > endTop) {
-                bottomPadding += childHeight;
+                bottomPadding += info.height;
             } else {
                 if (startIndex === -1) { startIndex = index; }
                 if (endIndex < index) { endIndex = index; }
-
-                if (this.children.find((c) => c instanceof ScrollItemDomNode && c.data === data) === undefined) {
-
-                    const child = this.createChild(data);
-                    if (lastIndex === -1 || index > lastIndex) {
-                        child.appendTo(this);
-                        lastIndex = index;
-                    } else {
-                        child.appendTo(this, 1);
-                    }
-
-                    childHeight = child.domElement.getBoundingClientRect().height;
-                    this.childHeights[data.id] = childHeight;
-                    appended = true;
+                if (info.dom === undefined) {
+                    info.dom = this.createChild(info.data);
+                    info.dom.appendTo(this);
+                    info.height = info.dom.domElement.getBoundingClientRect().height;
                 }
             }
-            top += childHeight;
+            top += info.height;
         }
 
-        for (const [index, data] of this.dataSet.entries()) {
-            if (index < startIndex || index > endIndex) {
-                const child = this.children.find((c) => c instanceof ScrollItemDomNode && c.data === data);
-                child?.delete();
+        this.bottomPaddingNode.exceptFromParent();
+
+        for (const [index, info] of this.dataSet.entries()) {
+            if (startIndex <= index && index <= endIndex) {
+                info.dom?.exceptFromParent();
+                info.dom?.appendTo(this);
+            } else {
+                info.dom?.delete(); delete info.dom;
             }
-        }
-
-        if (appended === true) {
-            this.bottomPaddingNode.exceptFromParent();
-            this.bottomPaddingNode.appendTo(this);
         }
 
         this.topPaddingNode.domElement.style.height = `${topPadding}px`;
         this.bottomPaddingNode.domElement.style.height = `${bottomPadding}px`;
+        this.bottomPaddingNode.appendTo(this);
     };
 
     private calculateSize = () => {
@@ -118,18 +90,21 @@ export default abstract class ScrollableDomNode<DT extends ScrollItemData, EL ex
     private resizeDebouncer: Debouncer = new Debouncer(100, () => this.calculateSize());
     private resizeHandler = () => this.resizeDebouncer.run();
 
-    public appendData(data: DT, index?: number): void {
+    public add(data: DT, index?: number): void {
         if (index !== undefined && index < this.dataSet.length) {
-            SkyUtil.insert(this.dataSet, index, data);
+            SkyUtil.insert(this.dataSet, index, { data, height: this.options.baseChildHeight });
         } else {
-            this.dataSet.push(data);
+            this.dataSet.push({ data, height: this.options.baseChildHeight });
         }
         this.refresh();
     }
 
-    public deleteData(data: DT): void {
-        SkyUtil.pull(this.dataSet, data);
-        this.refresh();
+    public remove(data: DT): void {
+        const index = this.dataSet.findIndex((d) => d.data === data);
+        if (index !== -1) {
+            this.dataSet.splice(index, 1);
+            this.refresh();
+        }
     }
 
     public appendTo(node: DomNode, index?: number): this {

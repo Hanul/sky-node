@@ -1,0 +1,1 @@
+{"version":3,"file":"Debouncer.d.ts","sourceRoot":"","sources":["../../../debouncer/Debouncer.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,OAAO,OAAO,SAAS;IAKtB,OAAO,CAAC,YAAY;IACpB,OAAO,CAAC,IAAI;IAJhB,OAAO,CAAC,eAAe,CAAkB;gBAG7B,YAAY,EAAE,MAAM,EACpB,IAAI,EAAE,MAAM,IAAI;IAGrB,GAAG;CAQb"}
