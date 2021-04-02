@@ -22,10 +22,10 @@ export default abstract class ScrollableDomNode<NDT, EL extends HTMLElement = HT
     constructor(
         domElement: EL,
         private options: ScrollableDomNodeOptions,
-        private createChild: (nodeData: NDT) => ScrollItemDomNode<NDT>,
+        private createChild: (nodeData: NDT, index: number) => ScrollItemDomNode<NDT>,
     ) {
         super(domElement);
-        super.append(
+        this.append(
             this.topPaddingNode = new DomNode(document.createElement(options.childTag)),
             this.bottomPaddingNode = new DomNode(document.createElement(options.childTag)),
         );
@@ -60,7 +60,7 @@ export default abstract class ScrollableDomNode<NDT, EL extends HTMLElement = HT
                 if (startIndex === -1) { startIndex = index; }
                 if (endIndex < index) { endIndex = index; }
                 if (info.dom === undefined) {
-                    info.dom = this.createChild(info.data);
+                    info.dom = this.createChild(info.data, index);
                     info.dom.appendTo(this);
                     info.height = info.dom.domElement.getBoundingClientRect().height;
                 }
@@ -101,12 +101,31 @@ export default abstract class ScrollableDomNode<NDT, EL extends HTMLElement = HT
         this.refresh();
     }
 
+    public findDataIndex(data: NDT): number {
+        return this.nodeDataSet.findIndex((d) => d.data === data);
+    }
+
     public remove(data: NDT): void {
-        const index = this.nodeDataSet.findIndex((d) => d.data === data);
+        const index = this.findDataIndex(data);
         if (index !== -1) {
             this.nodeDataSet.splice(index, 1);
             this.refresh();
         }
+    }
+
+    public move(data: NDT, to: number): void {
+        const index = this.findDataIndex(data);
+        if (index !== -1) {
+            this.nodeDataSet[index].dom?.delete();
+            this.nodeDataSet.splice(index, 1);
+            if (index < to) { to -= 1; }
+        }
+        if (to !== undefined && to < this.nodeDataSet.length) {
+            SkyUtil.insert(this.nodeDataSet, to, { data, height: this.options.baseChildHeight });
+        } else {
+            this.nodeDataSet.push({ data, height: this.options.baseChildHeight });
+        }
+        this.refresh();
     }
 
     public appendTo(node: DomNode, index?: number): this {

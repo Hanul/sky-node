@@ -6,9 +6,9 @@ interface Attributes<EL extends HTMLElement> {
     [name: string]: Style | string | number | boolean | undefined | EventHandler<any, EL>;
 }
 
-export type Child<EL extends HTMLElement> = Attributes<EL> | DomNode<EL> | string | undefined;
+export type Child<EL extends HTMLElement> = Attributes<HTMLElement> | DomNode<EL> | string | undefined;
 
-const el = <EL extends HTMLElement>(tag: string, ...children: Child<HTMLElement>[]) => {
+const el = <EL extends HTMLElement>(tag: string, ...children: Child<EL>[]) => {
     const domNode = new DomNode<EL>(document.createElement(tag) as EL);
     for (const child of children) {
         if (child !== undefined) {

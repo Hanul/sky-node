@@ -13,7 +13,7 @@ export default abstract class SkyNode extends EventContainer {
     }
 
     public appendTo(node: SkyNode, index?: number): this {
-        if (this.parent === node && index !== undefined && index < this.parent.children.indexOf(this)) {
+        if (this.parent === node && index !== undefined && this.parent.children.indexOf(this) < index) {
             index -= 1;
         }
         this.exceptFromParent();
@@ -39,10 +39,11 @@ export default abstract class SkyNode extends EventContainer {
         }
     }
 
-    public empty(): void {
+    public empty(): this {
         for (const child of this.children) {
             child.delete();
         }
+        return this;
     }
 
     public delete(): void {

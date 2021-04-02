@@ -13,14 +13,16 @@ export default abstract class ScrollableDomNode<NDT, EL extends HTMLElement = HT
     private bottomPaddingNode;
     private nodeDataSet;
     private scrollAreaHeight;
-    constructor(domElement: EL, options: ScrollableDomNodeOptions, createChild: (nodeData: NDT) => ScrollItemDomNode<NDT>);
+    constructor(domElement: EL, options: ScrollableDomNodeOptions, createChild: (nodeData: NDT, index: number) => ScrollItemDomNode<NDT>);
     init(nodeDataSet: NDT[]): void;
     private refresh;
     private calculateSize;
     private resizeDebouncer;
     private resizeHandler;
     add(data: NDT, index?: number): void;
+    findDataIndex(data: NDT): number;
     remove(data: NDT): void;
+    move(data: NDT, to: number): void;
     appendTo(node: DomNode, index?: number): this;
     delete(): void;
 }

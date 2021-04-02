@@ -31,33 +31,42 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
     }
 
     public on(eventName: string, eventHandler: EventHandler): void {
-        if (this.domEventMap[eventName] === undefined) {
-            this.domEventMap[eventName] = [];
+        if (`on${eventName}` in this.domElement) {
+            if (this.domEventMap[eventName] === undefined) {
+                this.domEventMap[eventName] = [];
+            }
+            const domEventHandler = (event: Event) => eventHandler(event, this);
+            this.domEventMap[eventName].push({ eventHandler, domEventHandler });
+            this.domElement.addEventListener(eventName, domEventHandler);
+        } else {
+            super.on(eventName, eventHandler);
         }
-        const domEventHandler = (event: Event) => eventHandler(event, this);
-        this.domEventMap[eventName].push({ eventHandler, domEventHandler });
-        this.domElement.addEventListener(eventName, domEventHandler);
-        super.on(eventName, eventHandler);
     }
 
     public off(eventName: string, eventHandler: EventHandler): void {
-        const domEvents = this.domEventMap[eventName];
-        if (domEvents !== undefined) {
-            const domEvent = domEvents.find((de) => de.eventHandler === eventHandler);
-            if (domEvent !== undefined) {
-                this.domElement.removeEventListener(eventName, domEvent.domEventHandler);
-                SkyUtil.pull(domEvents, domEvent);
-                if (domEvents.length === 0) {
-                    delete this.domEventMap[eventName];
+        if (`on${eventName}` in this.domElement) {
+            const domEvents = this.domEventMap[eventName];
+            if (domEvents !== undefined) {
+                const domEvent = domEvents.find((de) => de.eventHandler === eventHandler);
+                if (domEvent !== undefined) {
+                    this.domElement.removeEventListener(eventName, domEvent.domEventHandler);
+                    SkyUtil.pull(domEvents, domEvent);
+                    if (domEvents.length === 0) {
+                        delete this.domEventMap[eventName];
+                    }
                 }
             }
+        } else {
+            super.off(eventName, eventHandler);
         }
-        super.off(eventName, eventHandler);
     }
 
     public async fireEvent(eventName: string, ...params: any[]): Promise<void> {
-        this.domElement.dispatchEvent(new Event(eventName));
-        return super.fireEvent(eventName, ...params);
+        if (`on${eventName}` in this.domElement) {
+            this.domElement.dispatchEvent(new Event(eventName));
+        } else {
+            await super.fireEvent(eventName, ...params);
+        }
     }
 
     public appendText(text: string): void {
@@ -78,6 +87,14 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
             this.parent.domElement.removeChild(this.domElement);
         }
         super.exceptFromParent();
+    }
+
+    public empty(): this {
+        super.empty();
+        while (this.domElement.firstChild) {
+            this.domElement.removeChild(this.domElement.firstChild);
+        }
+        return this;
     }
 
     public delete(): void {

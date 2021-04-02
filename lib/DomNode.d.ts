@@ -16,6 +16,7 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
     appendText(text: string): void;
     appendTo(node: DomNode, index?: number): this;
     exceptFromParent(): void;
+    empty(): this;
     delete(): void;
 }
 //# sourceMappingURL=DomNode.d.ts.map
