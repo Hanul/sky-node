@@ -3,4 +3,6 @@ export { default as DomNode } from "./DomNode";
 export { default as BodyNode } from "./BodyNode";
 export { default as ScrollableDomNode, ScrollableDomNodeOptions, ScrollItemDomNode } from "./ScrollableDomNode";
 export { default as el } from "./el";
+export { default as FloatingDomNode, Position } from "./FloatingDomNode";
+export { default as ClosableFloatingDomNode } from "./ClosableFloatingDomNode";
 //# sourceMappingURL=index.d.ts.map

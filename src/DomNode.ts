@@ -22,12 +22,22 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
 
     public style(style: Style): void {
         for (const [key, value] of Object.entries(style)) {
-            if (typeof value === "number" && key !== "zIndex" && key !== "opacity") {
+            if (
+                typeof value === "number" &&
+                key !== "zIndex" &&
+                key !== "opacity" &&
+                key !== "flexGrow" &&
+                key !== "flexShrink"
+            ) {
                 (this.domElement.style as any)[key] = `${value}px`;
             } else {
                 (this.domElement.style as any)[key] = value;
             }
         }
+    }
+
+    public get rect(): DOMRect {
+        return this.domElement.getBoundingClientRect();
     }
 
     public on(eventName: string, eventHandler: EventHandler): void {

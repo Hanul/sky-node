@@ -10,6 +10,7 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
     private domEventMap;
     constructor(domElement: EL);
     style(style: Style): void;
+    get rect(): DOMRect;
     on(eventName: string, eventHandler: EventHandler): void;
     off(eventName: string, eventHandler: EventHandler): void;
     fireEvent(eventName: string, ...params: any[]): Promise<void>;

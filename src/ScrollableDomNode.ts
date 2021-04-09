@@ -30,19 +30,40 @@ export default abstract class ScrollableDomNode<NDT, EL extends HTMLElement = HT
             this.bottomPaddingNode = new DomNode(document.createElement(options.childTag)),
         );
         this.domElement.style.overflowY = "scroll";
-        this.on("scroll", this.refresh);
+        this.on("scroll", () => this.refresh());
         window.addEventListener("resize", this.resizeHandler);
     }
 
-    public init(nodeDataSet: NDT[]): void {
-        for (const data of nodeDataSet) {
+    public init(dataSet: NDT[]): void {
+        for (const nodeData of this.nodeDataSet) {
+            nodeData.dom?.delete();
+        }
+        this.nodeDataSet = [];
+        for (const data of dataSet) {
             this.nodeDataSet.push({ data, height: this.options.baseChildHeight });
         }
     }
 
+    private scrollStack: { top: number, length: number }[] = [];
+
     private refresh = () => {
-        const startTop = this.domElement.scrollTop;
-        const endTop = this.domElement.scrollTop + this.scrollAreaHeight;
+
+        const scrollTop = this.domElement.scrollTop;
+        if (this.scrollAreaHeight === 0 || (
+            this.scrollStack.length === 2 &&
+            this.scrollStack[0].top === scrollTop &&
+            this.scrollStack[1].length === this.nodeDataSet.length
+        )) {
+            return;
+        }
+
+        this.scrollStack.push({ top: scrollTop, length: this.nodeDataSet.length });
+        if (this.scrollStack.length > 2) {
+            this.scrollStack.splice(0, 1);
+        }
+
+        const startTop = scrollTop;
+        const endTop = scrollTop + this.scrollAreaHeight;
 
         let topPadding = 0;
         let bottomPadding = 0;
@@ -62,7 +83,7 @@ export default abstract class ScrollableDomNode<NDT, EL extends HTMLElement = HT
                 if (info.dom === undefined) {
                     info.dom = this.createChild(info.data, index);
                     info.dom.appendTo(this);
-                    info.height = info.dom.domElement.getBoundingClientRect().height;
+                    info.height = info.dom.rect.height;
                 }
             }
             top += info.height;
@@ -84,7 +105,7 @@ export default abstract class ScrollableDomNode<NDT, EL extends HTMLElement = HT
         this.bottomPaddingNode.appendTo(this);
     };
 
-    private calculateSize = () => {
+    public calculateSize = () => {
         this.scrollAreaHeight = this.domElement.clientHeight;
         this.refresh();
     };
@@ -108,6 +129,7 @@ export default abstract class ScrollableDomNode<NDT, EL extends HTMLElement = HT
     public remove(data: NDT): void {
         const index = this.findDataIndex(data);
         if (index !== -1) {
+            this.nodeDataSet[index].dom?.delete();
             this.nodeDataSet.splice(index, 1);
             this.refresh();
         }

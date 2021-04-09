@@ -6,9 +6,11 @@ export default abstract class SkyNode extends EventContainer {
     public parent: SkyNode | undefined;
     protected children: SkyNode[] = [];
 
-    public append(...nodes: SkyNode[]): void {
+    public append(...nodes: (SkyNode | undefined)[]): void {
         for (const node of nodes) {
-            node.appendTo(this);
+            if (node !== undefined) {
+                node.appendTo(this);
+            }
         }
     }
 
