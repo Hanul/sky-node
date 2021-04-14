@@ -155,6 +155,10 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
         return this;
     }
 
+    public addClass(className: string): void { this.domElement.classList.add(className); }
+    public deleteClass(className: string): void { this.domElement.classList.remove(className); }
+    public checkClass(className: string): boolean { return this.domElement.classList.contains(className); }
+
     public delete(): void {
         this.domElement.remove();
         (this.domEventMap as unknown) = undefined;
