@@ -6,6 +6,6 @@ export default abstract class ClosableFloatingDomNode<EL extends HTMLElement = H
     constructor(position: Position, domElement: EL | string);
     private touchCloseZone;
     appendTo(node: DomNode, index?: number): this;
-    exceptFromParent(): this;
+    protected exceptFromParent(): void;
 }
 //# sourceMappingURL=ClosableFloatingDomNode.d.ts.map

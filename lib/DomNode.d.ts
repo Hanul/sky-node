@@ -17,7 +17,6 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
     fireEvent(eventName: string, ...params: any[]): Promise<void>;
     appendText(text: string): void;
     appendTo(node: DomNode, index?: number): this;
-    exceptFromParent(): this;
     empty(): this;
     delete(): void;
 }

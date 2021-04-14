@@ -4,8 +4,7 @@ export default abstract class SkyNode extends EventContainer {
     protected children: SkyNode[];
     append(...nodes: (SkyNode | undefined)[]): void;
     appendTo(node: SkyNode, index?: number): this;
-    except(...nodes: SkyNode[]): void;
-    exceptFromParent(): this;
+    protected exceptFromParent(): void;
     empty(): this;
     delete(): void;
 }

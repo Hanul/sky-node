@@ -89,11 +89,8 @@ export default abstract class ScrollableDomNode<NDT, EL extends HTMLElement = HT
             top += info.height;
         }
 
-        this.bottomPaddingNode.exceptFromParent();
-
         for (const [index, info] of this.nodeDataSet.entries()) {
             if (startIndex <= index && index <= endIndex) {
-                info.dom?.exceptFromParent();
                 info.dom?.appendTo(this);
             } else {
                 info.dom?.delete(); delete info.dom;

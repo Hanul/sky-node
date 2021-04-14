@@ -147,13 +147,6 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
         return super.appendTo(node, index);
     }
 
-    public exceptFromParent(): this {
-        if (this.parent !== undefined) {
-            this.parent.domElement.removeChild(this.domElement);
-        }
-        return super.exceptFromParent();
-    }
-
     public empty(): this {
         super.empty();
         while (this.domElement.firstChild) {

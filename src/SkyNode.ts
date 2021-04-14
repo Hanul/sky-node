@@ -28,18 +28,11 @@ export default abstract class SkyNode extends EventContainer {
         return this;
     }
 
-    public except(...nodes: SkyNode[]): void {
-        for (const node of nodes) {
-            node.exceptFromParent();
-        }
-    }
-
-    public exceptFromParent(): this {
+    protected exceptFromParent(): void {
         if (this.parent !== undefined) {
             SkyUtil.pull(this.parent.children, this);
             this.parent = undefined;
         }
-        return this;
     }
 
     public empty(): this {

@@ -47,11 +47,10 @@ export default abstract class ClosableFloatingDomNode<EL extends HTMLElement = H
         return that;
     }
 
-    public exceptFromParent(): this {
-        const that = super.exceptFromParent();
+    protected exceptFromParent(): void {
         if (this.closeZone !== undefined && this.closeZone.deleted !== true) {
             this.closeZone.off("mousedown", this.touchCloseZone);
         }
-        return that;
+        super.exceptFromParent();
     }
 }
