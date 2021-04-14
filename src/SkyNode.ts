@@ -34,11 +34,12 @@ export default abstract class SkyNode extends EventContainer {
         }
     }
 
-    public exceptFromParent(): void {
+    public exceptFromParent(): this {
         if (this.parent !== undefined) {
             SkyUtil.pull(this.parent.children, this);
             this.parent = undefined;
         }
+        return this;
     }
 
     public empty(): this {

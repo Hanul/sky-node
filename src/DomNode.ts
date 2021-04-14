@@ -2,9 +2,45 @@ import { EventHandler } from "eventcontainer";
 import SkyUtil from "skyutil";
 import SkyNode from "./SkyNode";
 
-export type Style = { [key: string]: string | number };
+export type Style = { [key: string]: string | number | undefined };
 
 export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNode {
+
+    public static createElement<EL extends HTMLElement>(tag: string): EL {
+
+        let id: string | undefined;
+        const idIndex = tag.indexOf("#");
+        if (idIndex !== -1) {
+            id = tag.substring(idIndex + 1);
+            tag = tag.substring(0, idIndex);
+
+            const cindex = id.indexOf(".");
+            if (cindex !== -1) {
+                id = id.substring(0, cindex);
+                tag += id.substring(cindex);
+            }
+        }
+
+        let className: string | undefined;
+        const classNameIndex = tag.indexOf(".");
+        if (classNameIndex !== -1) {
+            className = tag.substring(classNameIndex + 1).replace(/\./g, " ");
+            tag = tag.substring(0, classNameIndex);
+        }
+
+        if (tag === "") {
+            tag = "div";
+        }
+
+        const element = document.createElement(tag) as EL;
+        if (id !== undefined) {
+            element.id = id;
+        }
+        if (className !== undefined) {
+            element.className = className;
+        }
+        return element;
+    }
 
     public parent: DomNode | undefined;
     public children: DomNode[] = [];
@@ -16,18 +52,29 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
         }[],
     } = {};
 
-    constructor(public domElement: EL) {
+    public domElement: EL;
+
+    constructor(domElement: EL | string) {
         super();
+        if (domElement instanceof HTMLElement) {
+            this.domElement = domElement;
+        } else {
+            this.domElement = DomNode.createElement<EL>(domElement);
+        }
     }
 
     public style(style: Style): void {
         for (const [key, value] of Object.entries(style)) {
-            if (
+            if (value === undefined) {
+                this.domElement.style.removeProperty(key);
+            } else if (
                 typeof value === "number" &&
                 key !== "zIndex" &&
                 key !== "opacity" &&
                 key !== "flexGrow" &&
-                key !== "flexShrink"
+                key !== "flexShrink" &&
+                key !== "gridGap" &&
+                key !== "order"
             ) {
                 (this.domElement.style as any)[key] = `${value}px`;
             } else {
@@ -80,7 +127,15 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
     }
 
     public appendText(text: string): void {
-        this.domElement.append(text);
+        const fragment = new DocumentFragment();
+        const strs = text.split("\n");
+        for (const [index, str] of strs.entries()) {
+            if (index > 0) {
+                fragment.append(document.createElement("br"));
+            }
+            fragment.append(str);
+        }
+        this.domElement.append(fragment);
     }
 
     public appendTo(node: DomNode, index?: number): this {
@@ -92,11 +147,11 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
         return super.appendTo(node, index);
     }
 
-    public exceptFromParent(): void {
+    public exceptFromParent(): this {
         if (this.parent !== undefined) {
             this.parent.domElement.removeChild(this.domElement);
         }
-        super.exceptFromParent();
+        return super.exceptFromParent();
     }
 
     public empty(): this {

@@ -5,3 +5,4 @@ export { default as ScrollableDomNode, ScrollableDomNodeOptions, ScrollItemDomNo
 export { default as el } from "./el";
 export { default as FloatingDomNode, Position } from "./FloatingDomNode";
 export { default as ClosableFloatingDomNode } from "./ClosableFloatingDomNode";
+export { default as Popup } from "./Popup";

@@ -7,7 +7,7 @@ export interface Position {
 
 export default abstract class FloatingDomNode<EL extends HTMLElement = HTMLElement> extends DomNode<EL> {
 
-    constructor(private position: Position, domElement: EL) {
+    constructor(private position: Position, domElement: EL | string) {
         super(domElement);
         this.style({ left: position.left, top: position.top });
     }

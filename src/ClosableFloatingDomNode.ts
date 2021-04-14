@@ -18,7 +18,7 @@ export default abstract class ClosableFloatingDomNode<EL extends HTMLElement = H
         }
     }
 
-    constructor(position: Position, domElement: EL) {
+    constructor(position: Position, domElement: EL | string) {
         super(position, domElement);
         this.on("mousedown", (event: MouseEvent) => {
             this.deleteChildren(this);
@@ -47,10 +47,11 @@ export default abstract class ClosableFloatingDomNode<EL extends HTMLElement = H
         return that;
     }
 
-    public exceptFromParent(): void {
-        super.exceptFromParent();
+    public exceptFromParent(): this {
+        const that = super.exceptFromParent();
         if (this.closeZone !== undefined && this.closeZone.deleted !== true) {
             this.closeZone.off("mousedown", this.touchCloseZone);
         }
+        return that;
     }
 }

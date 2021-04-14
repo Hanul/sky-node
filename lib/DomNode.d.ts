@@ -1,14 +1,15 @@
 import { EventHandler } from "eventcontainer";
 import SkyNode from "./SkyNode";
 export declare type Style = {
-    [key: string]: string | number;
+    [key: string]: string | number | undefined;
 };
 export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNode {
-    domElement: EL;
+    static createElement<EL extends HTMLElement>(tag: string): EL;
     parent: DomNode | undefined;
     children: DomNode[];
     private domEventMap;
-    constructor(domElement: EL);
+    domElement: EL;
+    constructor(domElement: EL | string);
     style(style: Style): void;
     get rect(): DOMRect;
     on(eventName: string, eventHandler: EventHandler): void;
@@ -16,7 +17,7 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
     fireEvent(eventName: string, ...params: any[]): Promise<void>;
     appendText(text: string): void;
     appendTo(node: DomNode, index?: number): this;
-    exceptFromParent(): void;
+    exceptFromParent(): this;
     empty(): this;
     delete(): void;
 }
