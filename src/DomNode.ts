@@ -156,6 +156,7 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
     }
 
     public delete(): void {
+        this.domElement.remove();
         (this.domEventMap as unknown) = undefined;
         super.delete();
     }
