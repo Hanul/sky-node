@@ -119,7 +119,7 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
     }
 
     public async fireEvent(eventName: string, ...params: any[]): Promise<void> {
-        if (`on${eventName}` in this.domElement) {
+        if (params.length === 0 && `on${eventName}` in this.domElement) {
             this.domElement.dispatchEvent(new Event(eventName));
         } else {
             await super.fireEvent(eventName, ...params);

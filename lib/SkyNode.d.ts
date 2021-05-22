@@ -6,6 +6,7 @@ export default abstract class SkyNode extends EventContainer {
     appendTo(node: SkyNode, index?: number): this;
     protected exceptFromParent(): void;
     empty(): this;
+    checkChild(target: SkyNode): boolean;
     delete(): void;
 }
 //# sourceMappingURL=SkyNode.d.ts.map

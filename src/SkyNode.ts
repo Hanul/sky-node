@@ -42,6 +42,15 @@ export default abstract class SkyNode extends EventContainer {
         return this;
     }
 
+    public checkChild(target: SkyNode): boolean {
+        for (const child of this.children) {
+            if (child === target || child.checkChild(target) === true) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public delete(): void {
         super.delete();
         this.exceptFromParent();
