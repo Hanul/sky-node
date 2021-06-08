@@ -1,8 +1,8 @@
-import { EventHandler } from "eventcontainer";
 import SkyNode from "./SkyNode";
 export declare type Style = {
     [key: string]: string | number | undefined;
 };
+export declare type DomEventHandler<ET extends Event, DT extends DomNode> = (event: ET, domNode: DT) => any;
 export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNode {
     static createElement<EL extends HTMLElement>(tag: string): EL;
     parent: DomNode | undefined;
@@ -12,10 +12,16 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
     constructor(domElement: EL | string);
     style(style: Style): void;
     get rect(): DOMRect;
-    on(eventName: string, eventHandler: EventHandler): void;
-    off(eventName: string, eventHandler: EventHandler): void;
-    fireEvent(eventName: string, ...params: any[]): Promise<void>;
+    get innerScrollPosition(): {
+        left: number;
+        top: number;
+    };
+    onDom<ET extends Event>(eventName: string, eventHandler: DomEventHandler<ET, this>): void;
+    offDom<ET extends Event>(eventName: string, eventHandler: DomEventHandler<ET, this>): void;
+    fireDomEvent(eventName: string, ...params: any[]): void;
     appendText(text: string): void;
+    private checkVisible;
+    private fireVisible;
     appendTo(node: DomNode, index?: number): this;
     empty(): this;
     addClass(className: string): void;

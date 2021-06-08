@@ -30,6 +30,7 @@ export default abstract class ScrollableDomNode<NDT, EL extends HTMLElement = HT
             this.bottomPaddingNode = new DomNode(document.createElement(options.childTag)),
         );
         this.domElement.style.overflowY = "scroll";
+        this.on("visible", () => this.calculateSize());
         this.on("scroll", () => this.refresh());
         window.addEventListener("resize", this.resizeHandler);
     }
@@ -145,12 +146,6 @@ export default abstract class ScrollableDomNode<NDT, EL extends HTMLElement = HT
             this.nodeDataSet.push({ data, height: this.options.baseChildHeight });
         }
         this.refresh();
-    }
-
-    public appendTo(node: DomNode, index?: number): this {
-        const that = super.appendTo(node, index);
-        this.calculateSize();
-        return that;
     }
 
     public delete(): void {

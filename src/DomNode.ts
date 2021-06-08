@@ -3,6 +3,7 @@ import SkyUtil from "skyutil";
 import SkyNode from "./SkyNode";
 
 export type Style = { [key: string]: string | number | undefined };
+export type DomEventHandler<ET extends Event, DT extends DomNode> = (event: ET, domNode: DT) => any;
 
 export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNode {
 
@@ -87,43 +88,50 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
         return this.domElement.getBoundingClientRect();
     }
 
-    public on(eventName: string, eventHandler: EventHandler): void {
-        if (`on${eventName}` in this.domElement) {
-            if (this.domEventMap[eventName] === undefined) {
-                this.domEventMap[eventName] = [];
+    public get innerScrollPosition(): { left: number, top: number } {
+
+        let left = 0;
+        let top = 0;
+
+        if (this.domElement !== document.body) {
+            let parent = this.domElement.parentNode;
+            while (parent !== document.body && parent !== null) {
+                if (parent instanceof HTMLElement) {
+                    left += parent.scrollLeft;
+                    top += parent.scrollTop;
+                }
+                parent = parent.parentNode;
             }
-            const domEventHandler = (event: Event) => eventHandler(event, this);
-            this.domEventMap[eventName].push({ eventHandler, domEventHandler });
-            this.domElement.addEventListener(eventName, domEventHandler);
-        } else {
-            super.on(eventName, eventHandler);
         }
+
+        return { left, top };
     }
 
-    public off(eventName: string, eventHandler: EventHandler): void {
-        if (`on${eventName}` in this.domElement) {
-            const domEvents = this.domEventMap[eventName];
-            if (domEvents !== undefined) {
-                const domEvent = domEvents.find((de) => de.eventHandler === eventHandler);
-                if (domEvent !== undefined) {
-                    this.domElement.removeEventListener(eventName, domEvent.domEventHandler);
-                    SkyUtil.pull(domEvents, domEvent);
-                    if (domEvents.length === 0) {
-                        delete this.domEventMap[eventName];
-                    }
+    public onDom<ET extends Event>(eventName: string, eventHandler: DomEventHandler<ET, this>): void {
+        if (this.domEventMap[eventName] === undefined) {
+            this.domEventMap[eventName] = [];
+        }
+        const domEventHandler = (event: ET) => eventHandler(event, this);
+        this.domEventMap[eventName].push({ eventHandler, domEventHandler });
+        this.domElement.addEventListener(eventName, domEventHandler as any);
+    }
+
+    public offDom<ET extends Event>(eventName: string, eventHandler: DomEventHandler<ET, this>): void {
+        const domEvents = this.domEventMap[eventName];
+        if (domEvents !== undefined) {
+            const domEvent = domEvents.find((de) => de.eventHandler === eventHandler);
+            if (domEvent !== undefined) {
+                this.domElement.removeEventListener(eventName, domEvent.domEventHandler);
+                SkyUtil.pull(domEvents, domEvent);
+                if (domEvents.length === 0) {
+                    delete this.domEventMap[eventName];
                 }
             }
-        } else {
-            super.off(eventName, eventHandler);
         }
     }
 
-    public async fireEvent(eventName: string, ...params: any[]): Promise<void> {
-        if (params.length === 0 && `on${eventName}` in this.domElement) {
-            this.domElement.dispatchEvent(new Event(eventName));
-        } else {
-            await super.fireEvent(eventName, ...params);
-        }
+    public fireDomEvent(eventName: string, ...params: any[]): void {
+        this.domElement.dispatchEvent(new Event(eventName));
     }
 
     public appendText(text: string): void {
@@ -138,13 +146,35 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
         this.domElement.append(fragment);
     }
 
+    private checkVisible(): boolean {
+        if (this.parent !== undefined) {
+            if (this.parent.domElement === document.body) {
+                return true;
+            } else {
+                return this.parent.checkVisible();
+            }
+        }
+        return false;
+    }
+
+    private fireVisible() {
+        this.fireEvent("visible");
+        for (const child of this.children) {
+            child.fireVisible();
+        }
+    }
+
     public appendTo(node: DomNode, index?: number): this {
         if (index !== undefined && index < node.children.length) {
             node.domElement.insertBefore(this.domElement, node.children[index].domElement);
         } else {
             node.domElement.append(this.domElement);
         }
-        return super.appendTo(node, index);
+        const that = super.appendTo(node, index);
+        if (this.checkVisible() === true) {
+            this.fireVisible();
+        }
+        return that;
     }
 
     public empty(): this {

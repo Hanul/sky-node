@@ -24,7 +24,6 @@ export default abstract class ScrollableDomNode<NDT, EL extends HTMLElement = HT
     findDataIndex(data: NDT): number;
     remove(data: NDT): void;
     move(data: NDT, to: number): void;
-    appendTo(node: DomNode, index?: number): this;
     delete(): void;
 }
 //# sourceMappingURL=ScrollableDomNode.d.ts.map

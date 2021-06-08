@@ -19,7 +19,7 @@ const el: <EL extends HTMLElement>(tag: string, ...children: Child<EL>[]) => Dom
             } else {
                 for (const [name, value] of Object.entries(child)) {
                     if (typeof value === "function") {
-                        domNode.on(name, value);
+                        domNode.onDom(name, value);
                     } else if (name === "style" && typeof value === "object") {
                         domNode.style(value);
                     } else if (value === undefined) {

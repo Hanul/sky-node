@@ -1,12 +1,11 @@
-import BodyNode from "./BodyNode";
+import BodyNode from "BodyNode";
+import Popup from "Popup";
 import DomNode from "./DomNode";
 import FloatingDomNode, { Position } from "./FloatingDomNode";
-import Popup from "./Popup";
-import SkyNode from "./SkyNode";
 
 export default abstract class ClosableFloatingDomNode<EL extends HTMLElement = HTMLElement> extends FloatingDomNode<EL> {
 
-    private closeZone: SkyNode | undefined;
+    private closeZone: DomNode | undefined;
 
     private deleteChildren(domNode: DomNode) {
         for (const child of domNode.children) {
@@ -20,7 +19,7 @@ export default abstract class ClosableFloatingDomNode<EL extends HTMLElement = H
 
     constructor(position: Position, domElement: EL | string) {
         super(position, domElement);
-        this.on("mousedown", (event: MouseEvent) => {
+        this.onDom("mousedown", (event: MouseEvent) => {
             this.deleteChildren(this);
             event.stopPropagation();
         });
@@ -30,21 +29,33 @@ export default abstract class ClosableFloatingDomNode<EL extends HTMLElement = H
         this.delete();
     };
 
+    private findAncestorOf(node: DomNode): DomNode | undefined {
+        let ancestor: DomNode | undefined = node.parent;
+        while (ancestor !== undefined) {
+            if (ancestor === BodyNode || ancestor instanceof Popup) {
+                return ancestor;
+            }
+            ancestor = ancestor.parent;
+        }
+    }
+
     public appendTo(node: DomNode, index?: number): this {
         const that = super.appendTo(node, index);
         if ((node instanceof ClosableFloatingDomNode) !== true) {
-            // 부모를 타고 검색하여 Body 혹은 Popup를 찾아, 그것을 클릭하면 닫히도록
-            let ancestor: SkyNode | undefined = this.parent;
-            while (ancestor !== undefined) {
-                if (ancestor === BodyNode || ancestor instanceof Popup) {
-                    this.closeZone = ancestor;
-                    this.closeZone.on("mousedown", this.touchCloseZone);
-                    break;
-                }
-                ancestor = ancestor.parent;
+            const ancestor: DomNode | undefined = this.findAncestorOf(this);
+            if (ancestor !== undefined) {
+                this.closeZone = ancestor;
+                this.closeZone.onDom("mousedown", this.touchCloseZone);
             }
         }
         return that;
+    }
+
+    public appendToAncestorOf(node: DomNode): this | undefined {
+        const ancestor: DomNode | undefined = this.findAncestorOf(node);
+        if (ancestor !== undefined) {
+            return this.appendTo(ancestor);
+        }
     }
 
     protected exceptFromParent(): void {
