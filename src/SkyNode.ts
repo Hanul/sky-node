@@ -36,9 +36,9 @@ export default abstract class SkyNode extends EventContainer {
     }
 
     public empty(): this {
-        for (const child of this.children) {
-            child.delete();
-        }
+        const copy = [];
+        for (const child of this.children) { copy.push(child); }
+        for (const child of copy) { child.delete(); }
         return this;
     }
 

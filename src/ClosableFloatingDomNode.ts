@@ -1,5 +1,3 @@
-import BodyNode from "BodyNode";
-import Popup from "Popup";
 import DomNode from "./DomNode";
 import FloatingDomNode, { Position } from "./FloatingDomNode";
 
@@ -29,16 +27,6 @@ export default abstract class ClosableFloatingDomNode<EL extends HTMLElement = H
         this.delete();
     };
 
-    private findAncestorOf(node: DomNode): DomNode | undefined {
-        let ancestor: DomNode | undefined = node.parent;
-        while (ancestor !== undefined) {
-            if (ancestor === BodyNode || ancestor instanceof Popup) {
-                return ancestor;
-            }
-            ancestor = ancestor.parent;
-        }
-    }
-
     public appendTo(node: DomNode, index?: number): this {
         const that = super.appendTo(node, index);
         if ((node instanceof ClosableFloatingDomNode) !== true) {
@@ -49,13 +37,6 @@ export default abstract class ClosableFloatingDomNode<EL extends HTMLElement = H
             }
         }
         return that;
-    }
-
-    public appendToAncestorOf(node: DomNode): this | undefined {
-        const ancestor: DomNode | undefined = this.findAncestorOf(node);
-        if (ancestor !== undefined) {
-            return this.appendTo(ancestor);
-        }
     }
 
     protected exceptFromParent(): void {
