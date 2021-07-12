@@ -2,7 +2,7 @@
     "name": "@hanul/skynode",
     "author": "Sim Young Jae",
     "homepage": "https://github.com/Hanul/skynode",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "types": "./lib/index.d.ts",
     "main": "./lib/index.js",
     "scripts": {
