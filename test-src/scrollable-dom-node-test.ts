@@ -26,9 +26,8 @@ class TestNode extends ScrollableDomNode<DT> {
     constructor() {
         super(
             document.createElement("div"),
-            dataSet,
             { childTag: "div", baseChildHeight: 24 },
-            (data) => new TestItem(data) ,
+            (data) => new TestItem(data),
         );
         this.style({
             position: "absolute",
@@ -38,4 +37,5 @@ class TestNode extends ScrollableDomNode<DT> {
     }
 }
 
-BodyNode.append(new TestNode());
+const node = new TestNode().appendTo(BodyNode);
+node.init(dataSet);

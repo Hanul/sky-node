@@ -16,6 +16,7 @@ export default abstract class ScrollableDomNode<NDT, EL extends HTMLElement = HT
     constructor(domElement: EL, options: ScrollableDomNodeOptions, createChild: (nodeData: NDT, index: number) => ScrollItemDomNode<NDT>);
     init(dataSet: NDT[]): void;
     private scrollStack;
+    private draw;
     private refresh;
     calculateSize: () => void;
     private resizeDebouncer;

@@ -30,7 +30,7 @@ export default abstract class ClosableFloatingDomNode<EL extends HTMLElement = H
     public appendTo(node: DomNode, index?: number): this {
         const that = super.appendTo(node, index);
         if ((node instanceof ClosableFloatingDomNode) !== true) {
-            const ancestor: DomNode | undefined = this.findAncestorOf(this);
+            const ancestor: DomNode | undefined = FloatingDomNode.findAncestorOf(this);
             if (ancestor !== undefined) {
                 this.closeZone = ancestor;
                 this.closeZone.onDom("mousedown", this.touchCloseZone);

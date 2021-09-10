@@ -5,9 +5,9 @@ export interface Position {
 }
 export default abstract class FloatingDomNode<EL extends HTMLElement = HTMLElement> extends DomNode<EL> {
     private position;
+    static findAncestorOf(node: DomNode): DomNode | undefined;
     constructor(position: Position, domElement: EL | string);
     putInsideWindow(): void;
-    protected findAncestorOf(node: DomNode): DomNode | undefined;
     appendToAncestorOf(node: DomNode): this | undefined;
     appendTo(node: DomNode, index?: number): this;
 }

@@ -31,7 +31,7 @@ export default abstract class ScrollableDomNode<NDT, EL extends HTMLElement = HT
         );
         this.domElement.style.overflowY = "scroll";
         this.on("visible", () => this.calculateSize());
-        this.on("scroll", () => this.refresh());
+        this.onDom("scroll", () => this.refresh());
         window.addEventListener("resize", this.resizeHandler);
     }
 
@@ -43,20 +43,13 @@ export default abstract class ScrollableDomNode<NDT, EL extends HTMLElement = HT
         for (const data of dataSet) {
             this.nodeDataSet.push({ data, height: this.options.baseChildHeight });
         }
+        this.scrollAreaHeight = this.domElement.clientHeight;
+        this.draw(this.domElement.scrollTop);
     }
 
     private scrollStack: { top: number, length: number }[] = [];
 
-    private refresh = () => {
-
-        const scrollTop = this.domElement.scrollTop;
-        if (this.scrollAreaHeight === 0 || (
-            this.scrollStack.length === 2 &&
-            this.scrollStack[0].top === scrollTop &&
-            this.scrollStack[1].length === this.nodeDataSet.length
-        )) {
-            return;
-        }
+    private draw(scrollTop: number) {
 
         this.scrollStack.push({ top: scrollTop, length: this.nodeDataSet.length });
         if (this.scrollStack.length > 2) {
@@ -101,6 +94,18 @@ export default abstract class ScrollableDomNode<NDT, EL extends HTMLElement = HT
         this.topPaddingNode.domElement.style.height = `${topPadding}px`;
         this.bottomPaddingNode.domElement.style.height = `${bottomPadding}px`;
         this.bottomPaddingNode.appendTo(this);
+    }
+
+    private refresh = () => {
+        const scrollTop = this.domElement.scrollTop;
+        if (this.scrollAreaHeight === 0 || (
+            this.scrollStack.length === 2 &&
+            this.scrollStack[0].top === scrollTop &&
+            this.scrollStack[1].length === this.nodeDataSet.length
+        )) {
+            return;
+        }
+        this.draw(scrollTop);
     };
 
     public calculateSize = () => {
