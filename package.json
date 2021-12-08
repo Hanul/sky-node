@@ -2,14 +2,14 @@
     "name": "@hanul/skynode",
     "author": "Sim Young Jae",
     "homepage": "https://github.com/Hanul/skynode",
-    "version": "0.0.16",
+    "version": "0.1.0",
     "types": "./lib/index.d.ts",
     "main": "./lib/index.js",
     "scripts": {
         "webpack-test": "webpack --mode development --watch --config webpack.config.test.js"
     },
     "dependencies": {
-        "eventcontainer": "^0.0.4",
+        "eventcontainer": "^0.0.6",
         "skyutil": "^0.0.7",
         "@hanul/debouncer": "^0.0.1"
     },

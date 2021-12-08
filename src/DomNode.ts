@@ -75,7 +75,8 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
                 key !== "flexGrow" &&
                 key !== "flexShrink" &&
                 key !== "gridGap" &&
-                key !== "order"
+                key !== "order" &&
+                key !== "zoom"
             ) {
                 (this.domElement.style as any)[key] = `${value}px`;
             } else {

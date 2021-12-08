@@ -766,10 +766,10 @@ esutils@^2.0.2:
   resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.3.tgz#74d2eb4de0b8da1293711910d50775b9b710ef64"
   integrity sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==
 
-eventcontainer@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/eventcontainer/-/eventcontainer-0.0.3.tgz#4dfcd7eba3ee34ddc0ec167d3b9a67880d6ad759"
-  integrity sha512-6O9dI4wrz3MXIeEn5zNP19sPjGNzWaHntEZ22T0nVvOjRwhxAXJGmFF75RihNwj6eKp+5NNYQLTS4ond3XOC3w==
+eventcontainer@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/eventcontainer/-/eventcontainer-0.0.6.tgz#dce77d4ccfb3ced99fce2e4df902e8a0aa6787a5"
+  integrity sha512-XRiEyjcKYzaa82TiG/cZicC4W/gDGbsduf95AMg20/zQMZGLtQlxqB7qWla0M/VXFqhNo076UvBey/r6qxp7Og==
   dependencies:
     skyutil "^0.0.1"
 
@@ -1535,10 +1535,10 @@ skyutil@^0.0.1:
   resolved "https://registry.yarnpkg.com/skyutil/-/skyutil-0.0.1.tgz#fdd8255b2eeac3ee06e3643427e34db0ee42ab8b"
   integrity sha512-rcbUtbwiuOJs9rvZHzVUgV1UBhOa7KxnPEmQapfhzSwUAFM2THLNZuoF/8XMFEuznRqPMeYeABo8TFiFrgBL+w==
 
-skyutil@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/skyutil/-/skyutil-0.0.3.tgz#810477c494c56982129fd6e781c10a4d133878d4"
-  integrity sha512-jprtQNms6A6zYGwEWfioyumjnC55mzRX4BlVA3h5fMqJh05loCMWffZcPTehfKPbujZwy2MmLqpzWLOHRnDonw==
+skyutil@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/skyutil/-/skyutil-0.0.7.tgz#db408d6d8d02623e83ddd57598822812b51c93db"
+  integrity sha512-5ZWmnrP2+UguDpfjjr01g2pPxs7Wm8olCFfURTCc6TubTvn3tX5GA3KRA8u2DCPxUsFgtXfaMgsKEMhZ6KRHRA==
 
 slash@^3.0.0:
   version "3.0.0"
