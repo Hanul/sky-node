@@ -17,8 +17,8 @@ export default class DomNode<EL extends HTMLElement = HTMLElement> extends SkyNo
 
             const cindex = id.indexOf(".");
             if (cindex !== -1) {
-                id = id.substring(0, cindex);
                 tag += id.substring(cindex);
+                id = id.substring(0, cindex);
             }
         }
 
